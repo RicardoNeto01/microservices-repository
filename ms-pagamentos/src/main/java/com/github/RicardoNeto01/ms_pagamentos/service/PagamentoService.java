@@ -2,6 +2,7 @@ package com.github.RicardoNeto01.ms_pagamentos.service;
 
 import com.github.RicardoNeto01.ms_pagamentos.dto.PagamentoDTO;
 import com.github.RicardoNeto01.ms_pagamentos.entity.Pagamento;
+import com.github.RicardoNeto01.ms_pagamentos.entity.Status;
 import com.github.RicardoNeto01.ms_pagamentos.repository.PagamentoRepository;
 import com.github.RicardoNeto01.ms_pagamentos.service.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,26 @@ public class PagamentoService {
         );
         return new PagamentoDTO(entity);
     }
+
+    @Transactional
+    public PagamentoDTO createPagamento(PagamentoDTO dto){
+        Pagamento entity = new Pagamento();
+        copyDtoToEntity(dto, entity);
+        entity.setStatus(Status.CRIADO);
+        entity = repository.save(entity);
+        return new PagamentoDTO(entity);
+    }
+    private void copyDtoToEntity(PagamentoDTO dto, Pagamento entity){
+        entity.setValor(dto.getValor());
+        entity.setNome(dto.getNome());
+        entity.setNumeroDoCartao(dto.getNumeroDoCartao());
+        entity.setValidade(dto.getValidade());
+        entity.setCodigoDeSeguranca(dto.getCodigoDeSeguranca());
+        entity.setPedidoId(dto.getPedidoId());
+        entity.setFormaDePagamentoId(dto.getFormaDePagamentoId());
+    }
+
+
+
 
 }
