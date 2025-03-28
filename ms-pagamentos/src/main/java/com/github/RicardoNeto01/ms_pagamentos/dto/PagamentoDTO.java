@@ -1,5 +1,6 @@
 package com.github.RicardoNeto01.ms_pagamentos.dto;
 
+
 import com.github.RicardoNeto01.ms_pagamentos.entity.Pagamento;
 import com.github.RicardoNeto01.ms_pagamentos.entity.Status;
 import jakarta.persistence.EnumType;
@@ -10,8 +11,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.logging.log4j.message.Message;
+
 
 import java.math.BigDecimal;
 
@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 @Getter
 
 public class PagamentoDTO {
+
     public PagamentoDTO(Pagamento entity) {
         id = entity.getId();
         valor = entity.getValor();
@@ -40,7 +41,7 @@ public class PagamentoDTO {
     private String nome;
     @Size(max = 19, message = "Número do cartão deve ter no máximo 19 caracteres")
     private String numeroDoCartao;
-    @Size(min = 5, max = 5, message = "Validade do cartão deve ter 5 caracteres")
+    @Size(max = 5, message = "Validade do cartão deve ter 5 caracteres")
     private String validade;
     @Size(min = 3, max = 3, message = "Código de segurança deve ter 3 caracteres")
     private String codigoDeSeguranca;
@@ -50,5 +51,4 @@ public class PagamentoDTO {
     private long pedidoId;
     @NotNull(message = "Forma de pagamento ID é obrigatório")
     private long formaDePagamentoId;
-
 }

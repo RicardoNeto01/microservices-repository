@@ -3,8 +3,9 @@ package com.github.RicardoNeto01.ms_pagamentos.service;
 import com.github.RicardoNeto01.ms_pagamentos.dto.PagamentoDTO;
 import com.github.RicardoNeto01.ms_pagamentos.entity.Pagamento;
 import com.github.RicardoNeto01.ms_pagamentos.entity.Status;
+import com.github.RicardoNeto01.ms_pagamentos.exceptions.ResourceNotFoundException;
 import com.github.RicardoNeto01.ms_pagamentos.repository.PagamentoRepository;
-import com.github.RicardoNeto01.ms_pagamentos.service.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,26 @@ public class PagamentoService {
         entity.setFormaDePagamentoId(dto.getFormaDePagamentoId());
     }
 
+    @Transactional
+    public PagamentoDTO updateProduto(Long id, PagamentoDTO dto) {
+        try {
+            // não vai no DB, obj monitorado pela JPA
+            Pagamento entity = repository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity.setStatus(dto.getStatus());
+            entity = repository.save(entity);
+            return new PagamentoDTO(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Recurso não encontrado. ID: " + id);
+        }
+    }
 
-
+    @Transactional
+    public void deletePagamento(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Recurso não encontrado. ID: " + id);
+        }
+        repository.deleteById(id);
+    }
 
 }

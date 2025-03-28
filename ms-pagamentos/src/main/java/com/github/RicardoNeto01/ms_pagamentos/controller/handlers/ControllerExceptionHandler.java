@@ -1,7 +1,7 @@
 package com.github.RicardoNeto01.ms_pagamentos.controller.handlers;
 
 import com.github.RicardoNeto01.ms_pagamentos.controller.handlers.dto.CustomErrorDTO;
-import com.github.RicardoNeto01.ms_pagamentos.service.exceptions.ResourceNotFoundException;
+import com.github.RicardoNeto01.ms_pagamentos.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-  /*  @ExceptionHandler(MethodArgumentNotValidException.class)
+   /* @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomErrorDTO> methodArgumentNotValidation(MethodArgumentNotValidException e,
                                                                       HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
@@ -47,6 +47,6 @@ public class ControllerExceptionHandler {
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),
                 e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
-    }
-    */
+    } */
+
 }
