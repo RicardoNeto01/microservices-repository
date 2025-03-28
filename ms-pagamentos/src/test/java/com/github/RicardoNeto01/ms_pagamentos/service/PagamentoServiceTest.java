@@ -1,7 +1,11 @@
 package com.github.RicardoNeto01.ms_pagamentos.service;
 
+import com.github.RicardoNeto01.ms_pagamentos.dto.PagamentoDTO;
+import com.github.RicardoNeto01.ms_pagamentos.entity.Pagamento;
 import com.github.RicardoNeto01.ms_pagamentos.exceptions.ResourceNotFoundException;
 import com.github.RicardoNeto01.ms_pagamentos.repository.PagamentoRepository;
+import com.github.RicardoNeto01.ms_pagamentos.tests.Factory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.mockito.ArgumentMatchers.any;
+
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 public class PagamentoServiceTest {
@@ -28,6 +35,9 @@ public class PagamentoServiceTest {
     private Long existingId;
     private Long nonExistingId;
 
+    private Pagamento pagamento;
+    private PagamentoDTO pagamentoDTO;
+
     @BeforeEach
     void setup() throws Exception{
         existingId = 1L;
@@ -41,6 +51,15 @@ public class PagamentoServiceTest {
         // Delete = primeiro caso, deleta.
         // não execute quando:
         Mockito.doNothing().when(repository).deleteById(existingId);
+
+        pagamento = Factory.creatPagamento();
+        pagamentoDTO = new PagamentoDTO(pagamento);
+        Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(pagamento));
+        Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+        Mockito.when(repository.save(any())).thenReturn(pagamento);
+        Mockito.when(repository.getReferenceById(existingId)).thenReturn(pagamento);
+        Mockito.when(repository.getReferenceById(nonExistingId)).thenThrow(EntityNotFoundException.class);
     }
 
     @Test
@@ -60,5 +79,44 @@ public class PagamentoServiceTest {
                     service.deletePagamento(nonExistingId);
                 }
                 );
+    }
+    @Test
+    public void getByIdShouldReturnPagamentoDTOWhenIdExists() {
+        // PagamentoDTO result = service.insert(pagamentoDTO);
+        // nome da variável para ficar igual ao controller
+        // não é obrigatório
+        PagamentoDTO dto = service.getById(existingId);
+
+        Assertions.assertNotNull(dto);
+        Assertions.assertEquals(dto.getId(), existingId);
+        Assertions.assertEquals(dto.getValor(), pagamento.getValor());
+    }
+    @Test
+    public void getByIdShouldReturnResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            service.getById(nonExistingId);
+        });
+    }
+    @Test
+    public void createPagamentoShouldReturnPagamentoDTOWhenPagamentoIsCreated() {
+        PagamentoDTO dto = service.createPagamento(pagamentoDTO);
+
+        Assertions.assertNotNull(dto);
+        Assertions.assertEquals(dto.getId(), pagamento.getId());
+    }
+    @Test
+    public void updatePagamentoShouldReturnPagamentoDTOWhenIdExists() {
+        PagamentoDTO dto = service.updateProduto(pagamento.getId(), pagamentoDTO);
+
+        Assertions.assertNotNull(dto);
+        Assertions.assertEquals(dto.getId(), existingId);
+        Assertions.assertEquals(dto.getValor(), pagamento.getValor());
+    }
+
+    @Test
+    public void updatePagamentoShouldReturnResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            service.updateProduto(nonExistingId, pagamentoDTO);
+        });
     }
 }
